@@ -30,7 +30,6 @@ class SSD1306_I2C:
         self.framebuf.fill(color)
     
     def text(self, text, x, y):
-        """Metni OLED ekrana yazdırır."""
         self.framebuf.text(text, x, y, 1)
     
     def show(self):
@@ -41,5 +40,4 @@ class SSD1306_I2C:
             self.pi.i2c_write_device(self.i2c, bytearray([0x40]) + self.buffer[i * self.width:(i + 1) * self.width])
     
     def close(self):
-        """I2C bağlantısını kapatır."""
         self.pi.i2c_close(self.i2c)

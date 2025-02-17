@@ -6,28 +6,31 @@ import math
 # Raspberry Pi'de pigpio başlat
 pi = pigpio.pi()
 
-# MAX30102 I2C Adresi
+# MAX30102 ve OLED I2C Adresleri
 MAX30102_ADDR = 0x57
+OLED_ADDR = 0x3C
 I2C_BUS = 1
 
-# OLED Ekranı Başlat
-i2c = pi.i2c_open(I2C_BUS, 0x3C)
-oled = SSD1306_I2C(128, 64, i2c)
+# OLED ve MAX30102 için I2C başlat
+max30102_i2c = pi.i2c_open(I2C_BUS, MAX30102_ADDR)
+i2c_oled = pi.i2c_open(I2C_BUS, OLED_ADDR)
+oled = SSD1306_I2C(128, 64, i2c_oled)
+
 
 def configure_max30102():
     """MAX30102'yi başlatır."""
-    pi.i2c_write_byte_data(MAX30102_ADDR, 0x09, 0x03)  # SpO₂ Modu
-    pi.i2c_write_byte_data(MAX30102_ADDR, 0x0A, 0x27)  # ADC 18-bit, 100Hz
-    pi.i2c_write_byte_data(MAX30102_ADDR, 0x0C, 0x24)  # RED LED gücü
-    pi.i2c_write_byte_data(MAX30102_ADDR, 0x0D, 0x24)  # IR LED gücü
-    pi.i2c_write_byte_data(MAX30102_ADDR, 0x08, 0x4F)  # FIFO Ayarları
+    pi.i2c_write_byte_data(max30102_i2c, 0x09, 0x03)  # SpO₂ Modu
+    pi.i2c_write_byte_data(max30102_i2c, 0x0A, 0x27)  # ADC 18-bit, 100Hz
+    pi.i2c_write_byte_data(max30102_i2c, 0x0C, 0x24)  # RED LED gücü
+    pi.i2c_write_byte_data(max30102_i2c, 0x0D, 0x24)  # IR LED gücü
+    pi.i2c_write_byte_data(max30102_i2c, 0x08, 0x4F)  # FIFO Ayarları
     print("MAX30102 Başlatıldı!")
 
 configure_max30102()
 
 def read_fifo():
     """FIFO'dan RED ve IR verilerini okur."""
-    data = pi.i2c_read_i2c_block_data(MAX30102_ADDR, 0x07, 6)
+    data = pi.i2c_read_i2c_block_data(max30102_i2c, 0x07, 6)
 
     red_val = (data[0] << 16) | (data[1] << 8) | data[2]
     ir_val = (data[3] << 16) | (data[4] << 8) | data[5]
