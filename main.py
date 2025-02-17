@@ -109,14 +109,23 @@ while True:
     red_values.append(red_val)
     time_intervals.append(current_time)
     
-    if len(ir_values) > 10:
+    if len(ir_values) > 100:
         ir_values.pop(0)
         red_values.pop(0)
         time_intervals.pop(0)
     
     bpm = calculate_bpm(ir_values, time_intervals)
+    
+    # Hareketli ortalama için BPM değerlerini saklıyoruz
+    bpm_values.append(bpm)
+    if len(bpm_values) > 5:  # Son 5 değerin ortalamasını al
+        bpm_values.pop(0)
+    
+    avg_bpm = sum(bpm_values) / len(bpm_values)  # Ortalama BPM
+    
     spo2 = calculate_spo2(red_values, ir_values)
     
-    show_data(bpm, spo2)
-    print(f"BPM: {bpm}, SpO₂: {spo2}")
-    time.sleep(1)
+    show_data(int(avg_bpm), spo2)
+    print(f"BPM: {int(avg_bpm)}, SpO₂: {spo2}")
+    
+    time.sleep(0.05)
