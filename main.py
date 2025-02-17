@@ -1,6 +1,6 @@
 import pigpio
 import time
-from ssd1306 import SSD1306_I2C
+from libs.ssd1306 import SSD1306_I2C
 import math
 
 # Raspberry Pi'de pigpio başlat
